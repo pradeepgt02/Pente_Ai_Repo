@@ -1,21 +1,32 @@
 {
-  "name": "webmind-ui-automation",
+  "name": "webmind-playwright-automation",
   "version": "1.0.0",
-  "description": "Playwright UI automation framework for WebMind (Part 7 - QA Testing Intern Assignment)",
+  "description": "Playwright JavaScript Test Automation Framework for WebMind AI Application",
+  "main": "playwright.config.js",
   "type": "module",
   "scripts": {
-    "test": "playwright test",
-    "test:headed": "playwright test --headed",
-    "test:debug": "playwright test --debug",
-    "test:auth": "playwright test tests/auth.spec.js",
-    "test:kb": "playwright test tests/knowledgeBase.spec.js",
-    "test:ai": "playwright test tests/aiChat.spec.js",
-    "test:flow": "playwright test tests/fullWorkflow.spec.js",
-    "report": "playwright show-report reports/html-report",
-    "codegen": "playwright codegen $BASE_URL"
+    "test": "npx playwright test",
+    "test:headed": "npx playwright test --headed",
+    "test:debug": "npx playwright test --debug",
+    "test:report": "npx playwright show-report reports",
+    "test:login": "npx playwright test tests/login.spec.js",
+    "test:crud": "npx playwright test tests/crud.spec.js",
+    "test:aichat": "npx playwright test tests/aiChat.spec.js",
+    "test:logout": "npx playwright test tests/logout.spec.js"
   },
+  "keywords": [
+    "playwright",
+    "automation",
+    "sdet",
+    "testing",
+    "javascript",
+    "e2e",
+    "webmind"
+  ],
+  "author": "Senior SDET",
+  "license": "ISC",
   "devDependencies": {
-    "@playwright/test": "^1.47.0",
-    "dotenv": "^16.4.5"
+    "@playwright/test": "^1.49.1",
+    "dotenv": "^16.4.7"
   }
 }

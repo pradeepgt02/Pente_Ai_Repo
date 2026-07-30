@@ -1,102 +1,150 @@
-# WebMind — UI Automation Framework (Part 7)
+# WebMind AI — Playwright JavaScript Test Automation Framework
 
-Playwright + JavaScript automation framework for WebMind, built as a
-maintainable Page Object Model with environment-driven configuration.
+Senior SDET level Playwright test automation framework built in pure JavaScript for E2E testing of the **WebMind AI Application**.
 
-## Project structure
+---
+
+## 📁 Framework Architecture & Project Structure
 
 ```
-Automation/
-├── playwright.config.js     # baseURL, reporters, screenshot/video/trace settings
-├── .env.example              # copy to .env and fill in real values
-├── config/
-│   └── testData.js           # env-driven test data (no hardcoded creds/URLs)
-├── pages/
-│   ├── BasePage.js           # shared wait/navigation helpers
-│   ├── AuthPage.js           # login + signup
-│   ├── DashboardPage.js      # welcome, nav, logout, theme toggle
-│   └── WorkspacePage.js      # KB CRUD + AI chat interactions
-├── fixtures/
-│   └── pageFixtures.js       # injects page objects into every test; `loggedInPage` fixture
-├── tests/
-│   ├── auth.spec.js          # login (valid/invalid) + logout
-│   ├── knowledgeBase.spec.js # KB CRUD: create, read, delete
-│   ├── aiChat.spec.js        # AI interaction: grounded answer + fallback
-│   └── fullWorkflow.spec.js  # all four required steps chained end-to-end
-└── reports/                  # generated on run (gitignored)
+automation/
+│
+├── pages/                   # Page Object Model (POM) classes
+│   ├── LoginPage.js         # Page object for /login route
+│   ├── DashboardPage.js     # Page object for /dashboard route
+│   ├── KnowledgeBasePage.js # Page object for /workspace/index route (CRUD)
+│   └── ChatPage.js          # Page object for /workspace/chat/:id route (AI Chat)
+│
+├── tests/                   # End-to-End Test Specifications
+│   ├── login.spec.js        # User authentication & login test suite
+│   ├── crud.spec.js         # Knowledge Base CRUD workflow test suite
+│   ├── aiChat.spec.js       # AI Chat interaction test suite
+│   └── logout.spec.js       # User session termination & logout test suite
+│
+├── utils/                   # Shared Helper Utilities & Test Data
+│   ├── testData.js          # Centralized test configuration & data
+│   └── helpers.js           # Reusable helper functions
+│
+├── fixtures/                # Custom Playwright Test Fixtures
+│   └── baseFixture.js       # Extended test fixture providing POM instances
+│
+├── screenshots/             # Automatic failure screenshots destination
+│   └── .gitkeep
+│
+├── reports/                 # Playwright HTML Test Reports destination
+│   └── .gitkeep
+│
+├── playwright.config.js     # Master Playwright Test Runner Configuration
+├── .env                     # Environment Variables (Credentials, Base URL)
+├── package.json             # Node dependencies and execution scripts
+└── README.md                # Framework documentation
 ```
 
-## Setup
+---
+
+## ⚡ Key Framework Features
+
+- **Page Object Model (POM)**: High maintainability with clean separation of page actions and test specifications.
+- **Custom Playwright Fixtures**: `baseFixture.js` automatically instantiates page objects (`loginPage`, `dashboardPage`, `knowledgeBasePage`, `chatPage`) for every test spec.
+- **Accessible Locators**: Strict adherence to user-centric, accessible selectors (`getByRole`, `getByPlaceholder`, `getByTestId`).
+- **Zero Credentials Hardcoding**: All authentication and test targets are managed via environment variables (`.env`).
+- **Automatic Failure Screenshots**: Playwright automatically captures screenshots on failure (`screenshot: 'only-on-failure'`).
+- **HTML Reporting**: Rich visual HTML report generated on every test run in `automation/reports/`.
+- **Reusable Assertions**: Custom assertions embedded in Page Objects for robust test validation.
+
+---
+
+## 🚀 Getting Started
+
+### 1. Prerequisites
+- Node.js version 18.0 or higher
+- Running instance of WebMind AI Application (default `http://localhost:5173`)
+
+### 2. Installation
+Navigate into the `automation/` directory and install dependencies along with Playwright browser binaries:
 
 ```bash
+cd automation
 npm install
-npx playwright install --with-deps chromium
-cp .env.example .env   # then fill in real values
+npx playwright install chromium
 ```
 
-## Running
+---
 
+## ⚙️ Environment Configuration (`.env`)
+
+Configure your target application URL and test credentials in `automation/.env`:
+
+```env
+BASE_URL=http://localhost:5173
+TEST_USER_EMAIL=qa.tester@webmind.ai
+TEST_USER_PASSWORD=Password123!
+TEST_USER_NAME=QA Tester
+TEST_WEBSITE_URL=https://example.com
+```
+
+---
+
+## 🧪 Running Tests
+
+### Execute All Tests (Headless)
 ```bash
-npm test                # full suite, headless
-npm run test:headed     # watch it run in a real browser window
-npm run test:debug      # step through with the Playwright inspector
-npm run test:flow       # just the combined login->CRUD->AI->logout journey
-npx playwright test --grep @smoke   # only the tagged smoke tests
-npm run report          # open the last HTML report
+npm run test
 ```
 
-## Design choices
-
-- **Page Object Model** — every screen's locators and actions live in one
-  `pages/*.js` file. Specs never touch a raw selector; they call
-  `authPage.login(...)`, `workspacePage.addWebsite(...)`, etc. Locator
-  changes only ever require editing one file.
-- **Fixtures over setup boilerplate** — `fixtures/pageFixtures.js` extends
-  Playwright's `test` so every spec just destructures the page objects it
-  needs. The `loggedInPage` fixture removes repeated login steps from
-  every test that requires an authenticated session.
-- **Environment-driven config** — `playwright.config.js` and
-  `config/testData.js` both read from `.env` (via `dotenv`), so the same
-  codebase runs against local (`localhost:5173`) or a live/staging
-  deployment by swapping one file — no code edits, no hardcoded secrets.
-- **Meaningful assertions** — tests assert on actual content (e.g. the
-  answer text matches the expected topic, a citation is present) rather
-  than just "an element appeared." Two aiChat tests specifically assert
-  the app's anti-hallucination behavior (grounded citation vs. explicit
-  fallback), since that's WebMind's core trust claim per the Test
-  Strategy.
-- **Evidence on failure only** — screenshots, video, and trace are all set
-  to capture only on failure, keeping passing runs fast and reports small
-  while still giving full debugging evidence when something breaks.
-- **HTML reporting** — `npm run report` opens a full interactive report
-  (pass/fail per test, timings, and embedded failure screenshots/traces).
-
-## Known assumptions / before first run
-
-This framework was written from the application's documented feature set
-(ApplicationOverview.md / TestStrategy.pdf), not from direct inspection of
-the live DOM. All locators use `data-testid` attributes as placeholders
-(e.g. `login-email-input`, `add-website-url-input`) following best
-practice for selector stability. **Before the first real run**, confirm
-or update these against the actual app — the fastest way is:
-
+### Execute Tests in Headed Browser Mode
 ```bash
-npm run codegen   # opens the app in a recorder, click through it, copy real selectors
+npm run test:headed
 ```
 
-Update the locators in `pages/*.js` accordingly; the test logic and
-structure won't need to change.
+### Execute Specific Test Suites
+```bash
+# Run Login Tests
+npm run test:login
 
-## Test data
+# Run Knowledge Base CRUD Tests
+npm run test:crud
 
-The suite expects a dedicated automation test account
-(`TEST_USER_EMAIL` / `TEST_USER_PASSWORD` in `.env`) to already exist. If
-your environment resets between runs, add a `global-setup.js` that signs
-this account up via the API before the suite starts, and reference it
-from `globalSetup` in `playwright.config.js`.
+# Run AI Chat Tests
+npm run test:aichat
 
-The `knowledgeBase.spec.js` and `fullWorkflow.spec.js` tests each create
-and then delete their own knowledge base, so repeated runs shouldn't
-accumulate stale data — but if a run fails mid-test before cleanup,
-manually remove any leftover `TEST_WEBSITE_URL` knowledge base from the
-account before re-running.
+# Run Logout Tests
+npm run test:logout
+```
+
+### View HTML Test Report
+```bash
+npm run test:report
+```
+
+---
+
+## 📄 Explanation of Folders and Files
+
+### 📁 `pages/` (Page Object Model)
+Contains class definitions representing the application pages:
+- **`LoginPage.js`**: Handles URL navigation, email/password input, login button submission, error alert checks, and URL assertions.
+- **`DashboardPage.js`**: Encapsulates workspace navigation, welcome banner assertions, "New Chat" triggering, "Add Website" navigation, and opening profile dropdown.
+- **`KnowledgeBasePage.js`**: Handles website indexing form inputs (URL, initial question, max crawl depth), verifying indexed websites, and executing website deletion workflows.
+- **`ChatPage.js`**: Controls text prompt entry into the AI composer, submitting messages, and verifying AI response rendering.
+
+### 📁 `tests/` (Test Specifications)
+Contains executable Playwright test specs using `beforeEach` and `afterEach` lifecycle hooks:
+- **`login.spec.js`**: Validates successful user login, invalid credential rejection, and empty input validations.
+- **`crud.spec.js`**: Validates full CRUD workflow (Index website, verify presence in list, and delete website).
+- **`aiChat.spec.js`**: Validates AI interaction lifecycle (initiating chat, submitting prompt, verifying user message & AI response).
+- **`logout.spec.js`**: Validates session logout from profile dropdown and redirection to login page.
+
+### 📁 `fixtures/`
+- **`baseFixture.js`**: Extends `@playwright/test` to inject POM instances into test parameters automatically.
+
+### 📁 `utils/`
+- **`testData.js`**: Holds test constants, environmental fallback values, user credentials, and expected error strings.
+- **`helpers.js`**: Reusable utility functions for element visibility waiting, random email generation, and domain parsing.
+
+### 📁 `screenshots/` & `reports/`
+- Output directories holding HTML reports (`reports/`) and failure screenshots (`screenshots/` & `test-results/`).
+
+### 📄 Configuration Files
+- **`playwright.config.js`**: Master Playwright runner setup configured with 30s timeout, HTML reporting, failure screenshots, video recordings, and base URL resolution.
+- **`package.json`**: NPM package manifest with execution scripts.

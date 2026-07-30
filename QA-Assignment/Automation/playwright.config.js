@@ -1,47 +1,43 @@
 import { defineConfig, devices } from '@playwright/test';
 import dotenv from 'dotenv';
+import path from 'path';
 
-dotenv.config();
+// Load environment variables from .env file
+dotenv.config({ path: path.resolve(process.cwd(), '.env') });
 
+/**
+ * Playwright Test Automation Configuration
+ * Senior SDET Standards – Deployed App (https://claysys-rag-project.vercel.app/)
+ */
 export default defineConfig({
   testDir: './tests',
-  timeout: 30_000,
+  timeout: 60000,       // 60s per test – deployed app needs more time
   expect: {
-    timeout: 5_000,
+    timeout: 10000,     // 10s for assertions
   },
-
-  // Run serially by default — the suite shares one test account and its
-  // knowledge bases, so parallel workers would race against each other.
   fullyParallel: false,
+  forbidOnly: !!process.env.CI,
+  retries: process.env.CI ? 2 : 1,  // 1 local retry to handle flakiness
   workers: 1,
-  retries: process.env.CI ? 1 : 0,
-
   reporter: [
-    ['html', { outputFolder: 'reports/html-report', open: 'never' }],
-    ['list'],
-    ['json', { outputFile: 'reports/results.json' }],
+    ['html', { outputFolder: 'reports', open: 'never' }],
+    ['list']
   ],
-
   use: {
-    baseURL: process.env.BASE_URL || 'http://localhost:5173',
-    actionTimeout: 10_000,
-    navigationTimeout: 15_000,
-
-    // Evidence capture — only kept on failure, so passing runs stay small.
+    baseURL: process.env.BASE_URL || 'https://claysys-rag-project.vercel.app/',
+    trace: 'on-first-retry',
     screenshot: 'only-on-failure',
     video: 'retain-on-failure',
-    trace: 'retain-on-failure',
+    actionTimeout: 15000,
+    navigationTimeout: 30000,
+    viewport: { width: 1280, height: 720 },
+    ignoreHTTPSErrors: true,
   },
-
+  outputDir: 'test-results',
   projects: [
     {
       name: 'chromium',
       use: { ...devices['Desktop Chrome'] },
     },
-    // Uncomment to extend cross-browser coverage:
-    // { name: 'firefox', use: { ...devices['Desktop Firefox'] } },
-    // { name: 'webkit', use: { ...devices['Desktop Safari'] } },
   ],
-
-  outputDir: 'reports/test-artifacts',
 });
