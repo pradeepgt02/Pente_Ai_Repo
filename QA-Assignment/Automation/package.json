@@ -1,0 +1,21 @@
+{
+  "name": "webmind-ui-automation",
+  "version": "1.0.0",
+  "description": "Playwright UI automation framework for WebMind (Part 7 - QA Testing Intern Assignment)",
+  "type": "module",
+  "scripts": {
+    "test": "playwright test",
+    "test:headed": "playwright test --headed",
+    "test:debug": "playwright test --debug",
+    "test:auth": "playwright test tests/auth.spec.js",
+    "test:kb": "playwright test tests/knowledgeBase.spec.js",
+    "test:ai": "playwright test tests/aiChat.spec.js",
+    "test:flow": "playwright test tests/fullWorkflow.spec.js",
+    "report": "playwright show-report reports/html-report",
+    "codegen": "playwright codegen $BASE_URL"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.47.0",
+    "dotenv": "^16.4.5"
+  }
+}
