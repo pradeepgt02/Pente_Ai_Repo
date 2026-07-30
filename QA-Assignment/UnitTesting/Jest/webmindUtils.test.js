@@ -41,6 +41,12 @@ describe("isStrongPassword", () => {
     expect(result.valid).toBe(false);
     expect(result.reason).toMatch(/letters and numbers/i);
   });
+
+  test("[Boundary] rejects a password one character below the minimum length (7 chars)", () => {
+    const result = isStrongPassword("Test123");
+    expect(result.valid).toBe(false);
+    expect(result.reason).toMatch(/at least 8 characters/i);
+  });
 });
 
 // ---------------------------------------------------------
@@ -70,6 +76,13 @@ describe("sanitizeFullName", () => {
     const result = sanitizeFullName("😀🚀🔥");
     expect(result.valid).toBe(false);
     expect(result.reason).toMatch(/must contain letters/i);
+  });
+
+  test("[Boundary] rejects a name exceeding the 100-character maximum length", () => {
+    const longName = "A".repeat(150);
+    const result = sanitizeFullName(longName);
+    expect(result.valid).toBe(false);
+    expect(result.sanitized.length).toBe(100);
   });
 });
 

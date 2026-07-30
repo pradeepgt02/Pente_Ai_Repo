@@ -39,6 +39,13 @@ class TestChunkText:
         chunks = chunk_text(text, chunk_size=500, overlap=50)
         assert len(chunks) == 3
 
+    def test_boundary_text_length_exactly_equal_to_chunk_size(self):
+        """[Boundary] Text length exactly equal to chunk_size returns a single chunk."""
+        text = "A" * 500
+        chunks = chunk_text(text, chunk_size=500, overlap=50)
+        assert len(chunks) == 1
+        assert len(chunks[0]) == 500
+
 
 # ---------------------------------------------------------
 # hash_password / verify_password
@@ -90,3 +97,7 @@ class TestIsValidEmail:
     def test_negative_missing_at_symbol(self):
         """[Negative] Rejects an email missing the '@' symbol."""
         assert is_valid_email("plainaddress") is False
+
+    def test_boundary_missing_domain_extension(self):
+        """[Boundary] Rejects an email missing the domain extension (e.g., '.com')."""
+        assert is_valid_email("test@localhost") is False

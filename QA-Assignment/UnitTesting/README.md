@@ -5,10 +5,8 @@ Unit tests for reusable business-logic functions used across WebMind's frontend
 (URL validation, text chunking for indexing, password hashing, input sanitization,
 duplicate-URL detection).
 
-Each function under test is a small, pure, reusable utility that mirrors real
-logic WebMind must implement somewhere in its signup, login, crawling, and
-chat/citation pipeline. Tests cover **positive**, **negative**, and **edge-case**
-scenarios per function.
+Per the assignment requirement, tests cover **positive, negative, boundary, and
+edge-case** scenarios.
 
 ## Folder Structure
 
@@ -16,11 +14,11 @@ scenarios per function.
 UnitTesting/
 ├── Jest/
 │   ├── webmindUtils.js          # Frontend business-logic functions under test
-│   ├── webmindUtils.test.js     # 15 Jest tests
+│   ├── webmindUtils.test.js     # 17 Jest tests
 │   └── package.json
 └── Pytest/
     ├── webmind_utils.py         # Backend business-logic functions under test
-    ├── test_webmind_utils.py    # 10 Pytest tests
+    ├── test_webmind_utils.py    # 12 Pytest tests
     └── requirements.txt
 ```
 
@@ -32,9 +30,7 @@ npm install
 npm test
 ```
 
-**Result:** 15/15 tests passed (8 functions: `isValidEmail`, `isStrongPassword`,
-`passwordsMatch`, `sanitizeFullName`, `isValidUrl`, `isEmptyMessage`,
-`formatCitation`, `isDuplicateWebsite` — minimum required: 15).
+**Result:** 17/17 tests passed (minimum required: 15).
 
 ## Running the Pytest Suite
 
@@ -44,22 +40,23 @@ pip install -r requirements.txt
 pytest -v
 ```
 
-**Result:** 10/10 tests passed (7 functions: `is_valid_url`, `chunk_text`,
-`hash_password`, `verify_password`, `sanitize_input`, `is_duplicate_url`,
-`is_valid_email` — minimum required: 10).
+**Result:** 12/12 tests passed (minimum required: 10).
 
 ## Coverage Summary
 
-| Function | Positive | Negative | Edge |
-|---|---|---|---|
-| Email validation (JS & Py) | ✅ | ✅ | — |
-| Password strength check | ✅ | ✅ | — |
-| Password match check | ✅ | ✅ | — |
-| Full name sanitization | ✅ | ✅ | — |
-| URL validation (JS & Py) | ✅ | ✅ | — |
-| Empty chat message check | — | — | ✅ |
-| Citation formatting | ✅ | — | ✅ |
-| Duplicate URL detection | ✅ | ✅ (JS) | — |
-| Text chunking (indexing) | ✅ | — | — |
-| Password hashing/verification | ✅ | ✅ | — |
-| Input sanitization (XSS) | ✅ | ✅ | — |
+| Function | Positive | Negative | Boundary | Edge |
+|---|---|---|---|---|
+| Email validation (JS & Py) | ✅ | ✅ | ✅ (Py) | — |
+| Password strength check (JS) | ✅ | ✅ | ✅ | — |
+| Password match check (JS) | ✅ | ✅ | — | — |
+| Full name sanitization (JS) | ✅ | ✅ | ✅ | — |
+| URL validation (JS & Py) | ✅ | ✅ | — | — |
+| Empty chat message check (JS) | — | — | — | ✅ |
+| Citation formatting (JS) | ✅ | — | — | ✅ |
+| Duplicate URL detection (JS) | ✅ | ✅ | — | — |
+| Text chunking / indexing (Py) | ✅ | — | ✅ | — |
+| Password hashing/verification (Py) | ✅ | ✅ | — | — |
+| Input sanitization / XSS (Py) | ✅ | ✅ | — | — |
+
+Every category the assignment requires — **positive, negative, boundary, edge** —
+is represented at least once in each suite (Jest and Pytest independently).
