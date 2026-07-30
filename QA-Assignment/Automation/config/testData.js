@@ -4,9 +4,9 @@
 // the .env file — no code changes required.
 
 export const testUser = {
-  email: process.env.TEST_USER_EMAIL || 'qa.automation@example.com',
-  password: process.env.TEST_USER_PASSWORD || 'Test@1234',
-  fullName: process.env.TEST_USER_NAME || 'Pradeepkumar',
+  email: process.env.TEST_USER_EMAIL || 'qa.automation.webmind@gmail.com',
+  password: process.env.TEST_USER_PASSWORD || 'TestAuto@123',
+  fullName: process.env.TEST_USER_NAME || 'Pradeedkumar',
 };
 
 export const testWebsite = {

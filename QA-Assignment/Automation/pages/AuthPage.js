@@ -12,12 +12,27 @@ export class AuthPage extends BasePage {
     super(page);
 
     // --- Login locators ---
-    this.loginEmailInput = page.getByTestId('login-email-input');
-    this.loginPasswordInput = page.getByTestId('login-password-input');
+    // CONFIRMED against a real screenshot of /login (as of this edit):
+    // the email field's placeholder is literally "name@example.com", and
+    // the submit button reads "Login" with an arrow icon.
+    this.loginEmailInput = page.getByPlaceholder('name@example.com');
+    // The password field's placeholder wasn't visible in the screenshot
+    // (masked dots only), so this falls back to the input's type attribute,
+    // which is a safe, standard way to target it regardless of placeholder text.
+    this.loginPasswordInput = page.locator('input[type="password"]').first();
     this.loginSubmitButton = page.getByRole('button', { name: /log ?in/i });
+    // NOT YET CONFIRMED — no failed-login screenshot available. Leaving as a
+    // testid guess; replace once you've seen what a real validation/error
+    // message looks like (e.g. it might be a toast, not an inline element).
     this.loginErrorMessage = page.getByTestId('login-error-message');
 
     // --- Signup locators ---
+    // NOT YET CONFIRMED — no screenshot of /signup has been provided yet.
+    // These are still placeholders. Run:
+    //   npx playwright codegen https://claysys-rag-project.vercel.app/signup
+    // click through the real form, and swap these for what codegen records
+    // (likely getByPlaceholder(...) or getByLabel(...), following the same
+    // pattern as the login fields above).
     this.signupFullNameInput = page.getByTestId('signup-fullname-input');
     this.signupEmailInput = page.getByTestId('signup-email-input');
     this.signupPasswordInput = page.getByTestId('signup-password-input');
