@@ -1,0 +1,12 @@
+{
+  "name": "webmind-jest-unit-tests",
+  "version": "1.0.0",
+  "description": "Jest unit tests for WebMind frontend business-logic functions (QA Assignment - Part 6)",
+  "main": "webmindUtils.js",
+  "scripts": {
+    "test": "jest --verbose"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0"
+  }
+}
