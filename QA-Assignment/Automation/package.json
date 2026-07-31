@@ -5,14 +5,15 @@
   "main": "playwright.config.js",
   "type": "module",
   "scripts": {
-    "test": "npx playwright test",
-    "test:headed": "npx playwright test --headed",
-    "test:debug": "npx playwright test --debug",
-    "test:report": "npx playwright show-report reports",
-    "test:login": "npx playwright test tests/login.spec.js",
-    "test:crud": "npx playwright test tests/crud.spec.js",
-    "test:aichat": "npx playwright test tests/aiChat.spec.js",
-    "test:logout": "npx playwright test tests/logout.spec.js"
+    "postinstall": "node utils/patchPlaywright.js",
+    "test": "playwright.cmd test",
+    "test:headed": "playwright.cmd test --headed",
+    "test:debug": "playwright.cmd test --debug",
+    "test:report": "playwright.cmd show-report reports",
+    "test:login": "playwright.cmd test tests/login.spec.js",
+    "test:crud": "playwright.cmd test tests/crud.spec.js",
+    "test:aichat": "playwright.cmd test tests/aiChat.spec.js",
+    "test:logout": "playwright.cmd test tests/logout.spec.js"
   },
   "keywords": [
     "playwright",

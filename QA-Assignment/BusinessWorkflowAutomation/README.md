@@ -68,6 +68,8 @@ playwright install chromium
 ### 3. Run Tests
 
 ```bash
+# Run all the Test
+python -m pytest tests/ -v
 # Run the Master Part 8 End-to-End Business Workflow test
 pytest tests/test_e2e_business_workflow.py
 
