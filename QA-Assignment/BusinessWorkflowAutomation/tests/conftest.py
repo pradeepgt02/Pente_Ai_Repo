@@ -16,9 +16,9 @@ from pages.knowledge_base_page import KnowledgeBasePage
 from pages.chat_page import ChatPage
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture(scope="function")
 def browser_context():
-    """Session-scoped Playwright browser context."""
+    """Function-scoped Playwright browser context for strict test isolation."""
     with sync_playwright() as p:
         browser = p.chromium.launch(
             headless=True,
@@ -71,11 +71,17 @@ def chat_page(page: Page):
 
 @pytest.hookimpl(tryfirst=True, hookwrapper=True)
 def pytest_runtest_makereport(item, call):
-    """Capture failure screenshots automatically."""
+    """Capture failure screenshots automatically for any test failure."""
     outcome = yield
     report = outcome.get_result()
     if report.when == "call" and report.failed:
         page = item.funcargs.get("page")
+        if not page:
+            # Fallback: extract page object from POM fixtures if page isn't in item.funcargs
+            for arg_val in item.funcargs.values():
+                if hasattr(arg_val, "page") and isinstance(arg_val.page, Page):
+                    page = arg_val.page
+                    break
         if page:
             screenshots_dir = Path(__file__).parent.parent / "screenshots"
             screenshots_dir.mkdir(exist_ok=True)
@@ -84,3 +90,4 @@ def pytest_runtest_makereport(item, call):
                 page.screenshot(path=str(screenshot_path), full_page=True)
             except Exception:
                 pass
+
